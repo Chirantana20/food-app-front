@@ -1,33 +1,74 @@
-export default function RecipeCard({ recipe }) {
+import { motion } from "framer-motion";
+import { Bookmark } from "lucide-react";
+import { useState } from "react";
+
+export default function RecipeCard({ recipe, onSelect, onSave, isSaved = false }) {
+  const [saved, setSaved] = useState(isSaved);
+
+  const handleSave = (e) => {
+    e.stopPropagation();
+    setSaved(!saved);
+    if (onSave) {
+      onSave(recipe);
+    }
+  };
+
   return (
-    <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all">
-      <div className="h-48 bg-gradient-to-br from-orange-200 to-green-200 flex items-center justify-center text-7xl">
-        {recipe.image}
-      </div>
+    <motion.div
+      layout
+      whileHover={{ scale: 1.03 }}
+      transition={{ type: "tween", duration: 0.3 }}
+      onClick={() => onSelect(recipe)}
+      style={{ backgroundColor: '#ffffff', borderColor: '#D9D9D9' }}
+      className="cursor-pointer rounded-xl border-2 overflow-hidden hover:shadow-xl"
+    >
       <div className="p-6">
-        <h3 className="font-bold text-xl text-gray-800 mb-2">{recipe.name}</h3>
-        <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
+        {/* Save Button */}
+        <div className="flex justify-between items-start mb-2">
+          <h3 className="font-bold text-xl" style={{ color: '#001B48' }}>{recipe.name}</h3>
+          <button
+            onClick={handleSave}
+            className="p-2 rounded-lg transition-colors"
+            style={{
+              backgroundColor: saved ? '#E9B239' : '#D9D9D9',
+              color: '#001B48',
+            }}
+          >
+            <Bookmark className="w-5 h-5" fill={saved ? 'currentColor' : 'none'} />
+          </button>
+        </div>
+
+        {/* time + difficulty */}
+        <div className="flex items-center gap-4 text-sm mb-4" style={{ color: '#001B48' }}>
           <span>⏱️ {recipe.time}</span>
           <span>📊 {recipe.difficulty}</span>
         </div>
+
+        {/* Ingredient Match */}
         <div className="mb-4">
-          <div className="flex justify-between text-sm mb-1">
+          <div className="flex justify-between text-sm mb-1" style={{ color: '#001B48' }}>
             <span>Ingredient Match</span>
-            <span className="text-green-600 font-medium">
+            <span className="font-semibold" style={{ color: '#E9B239' }}>
               {recipe.matchedIngredients}/{recipe.totalIngredients}
             </span>
           </div>
-          <div className="w-full bg-gray-200 h-2 rounded-full">
+          <div style={{ backgroundColor: '#D9D9D9' }} className="w-full h-2 rounded-full">
             <div
-              className="bg-gradient-to-r from-orange-500 to-green-500 h-2 rounded-full"
-              style={{ width: `${(recipe.matchedIngredients / recipe.totalIngredients) * 100}%` }}
+              style={{
+                backgroundColor: '#E9B239',
+                width: `${
+                  (recipe.matchedIngredients / recipe.totalIngredients) * 100
+                }%`,
+              }}
+              className="h-2 rounded-full"
             />
           </div>
         </div>
-        <button className="w-full py-3 bg-orange-500 text-white rounded-xl font-medium hover:bg-orange-600">
+
+        <button style={{ backgroundColor: '#E9B239', color: '#001B48' }} className="w-full py-3 rounded-xl font-medium hover:shadow-lg">
           View Recipe
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 }
